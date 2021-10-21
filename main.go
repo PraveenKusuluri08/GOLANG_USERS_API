@@ -25,10 +25,7 @@ type User struct {
 
 var users []User
 
-func (user *User) isEmty() bool {
-	// return c.CourseId == "" && c.CourseName == ""
-	return user.Name == ""
-}
+
 func main() {
 	fmt.Println("API🚀")
 	r := mux.NewRouter()
@@ -53,7 +50,7 @@ func userRoute_Create(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Println(user.isEmty())
 
-	if user.isEmty() {
+	if user.isBodyContains() {
 		json.NewEncoder(w).Encode("No data present ")
 		return
 	}
@@ -73,6 +70,11 @@ func userRoute_Create(w http.ResponseWriter, r *http.Request) {
 // 		panic(err)
 // 	}
 // }
+
+func (user *User) isBodyContains() bool {
+	// return c.CourseId == "" && c.CourseName == ""
+	return user.Name == "" ||user.Email=="" ||user.Password==""
+}
 
 func passwordHasher(password string) (string, error) {
 	hash, err := bcrypt.GenerateFromPassword([]byte(password), 15)
