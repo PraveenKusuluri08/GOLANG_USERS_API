@@ -25,15 +25,15 @@ type User struct {
 
 var users []User
 
-
 func (user *User) isEmty() bool {
 	// return c.CourseId == "" && c.CourseName == ""
 	return user.Name == ""
 }
 func (user *User) isAdmin() bool {
-	return user.Role == 0
-}
 
+	return user.Role == 0
+
+}
 func main() {
 
 	fmt.Println("API🚀")
@@ -58,14 +58,8 @@ func userRoute_Create(w http.ResponseWriter, r *http.Request) {
 	var user User
 	_ = json.NewDecoder(r.Body).Decode(&user)
 
-
 	if user.isEmty() {
-		json.NewEncoder(w).Encode("Some of the fileds is Missing")
-	fmt.Println(user.isEmty())
-
-	if user.isBodyContains() {
-		json.NewEncoder(w).Encode("No data present ")
-
+		json.NewEncoder(w).Encode("Some of the fields is missing")
 		return
 	}
 	rand.Seed(time.Now().UnixNano())
@@ -88,7 +82,7 @@ func getAllUsers_Admin(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Println("data", user.isAdmin())
 
-	if r.Body != nil {
+	if r.Body != nil && user.isAdmin() {
 
 		fmt.Println("Admin")
 		json.NewEncoder(w).Encode(users)
@@ -104,11 +98,6 @@ func getAllUsers_Admin(w http.ResponseWriter, r *http.Request) {
 // 		panic(err)
 // 	}
 // }
-
-func (user *User) isBodyContains() bool {
-	// return c.CourseId == "" && c.CourseName == ""
-	return user.Name == "" ||user.Email=="" ||user.Password==""
-}
 
 func passwordHasher(password string) (string, error) {
 	hash, err := bcrypt.GenerateFromPassword([]byte(password), 15)
