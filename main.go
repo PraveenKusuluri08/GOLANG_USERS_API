@@ -25,6 +25,7 @@ type User struct {
 
 var users []User
 
+
 func (user *User) isEmty() bool {
 	// return c.CourseId == "" && c.CourseName == ""
 	return user.Name == ""
@@ -57,8 +58,14 @@ func userRoute_Create(w http.ResponseWriter, r *http.Request) {
 	var user User
 	_ = json.NewDecoder(r.Body).Decode(&user)
 
+
 	if user.isEmty() {
 		json.NewEncoder(w).Encode("Some of the fileds is Missing")
+	fmt.Println(user.isEmty())
+
+	if user.isBodyContains() {
+		json.NewEncoder(w).Encode("No data present ")
+
 		return
 	}
 	rand.Seed(time.Now().UnixNano())
@@ -97,6 +104,11 @@ func getAllUsers_Admin(w http.ResponseWriter, r *http.Request) {
 // 		panic(err)
 // 	}
 // }
+
+func (user *User) isBodyContains() bool {
+	// return c.CourseId == "" && c.CourseName == ""
+	return user.Name == "" ||user.Email=="" ||user.Password==""
+}
 
 func passwordHasher(password string) (string, error) {
 	hash, err := bcrypt.GenerateFromPassword([]byte(password), 15)
