@@ -41,6 +41,7 @@ func main() {
 	r.HandleFunc("/", standardRoute)
 	r.HandleFunc("/user", userRoute_Create).Methods("POST")
 	r.HandleFunc("/users", getAllUsers_Admin).Methods("GET")
+	r.HandleFunc("/user/{id}", getSingleUser).Methods("GET")
 	listen := http.ListenAndServe(":5000", r)
 	log.Fatal(listen)
 }
@@ -91,6 +92,21 @@ func getAllUsers_Admin(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode("No users so far")
 	}
 
+}
+
+func getSingleUser(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Get single User document")
+	w.Header().Set("Content-Type", "application/json")
+	params := mux.Vars(r)
+	fmt.Println(params["id"])
+
+	for _, user := range users {
+		if user.UserId == params["id"] {
+			json.NewEncoder(w).Encode(user)
+			return
+		}
+	}
+	json.NewEncoder(w).Encode("No user found with given id")
 }
 
 // func handleError(err error) {
