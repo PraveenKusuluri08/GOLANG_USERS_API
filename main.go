@@ -42,6 +42,7 @@ func main() {
 	r.HandleFunc("/user", userRoute_Create).Methods("POST")
 	r.HandleFunc("/users", getAllUsers_Admin).Methods("GET")
 	r.HandleFunc("/user/{id}", getSingleUser).Methods("GET")
+	r.HandleFunc("/user/{id}", UpdateSingleUser).Methods("PUT")
 	listen := http.ListenAndServe(":5000", r)
 	log.Fatal(listen)
 }
@@ -109,6 +110,34 @@ func getSingleUser(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode("No user found with given id")
 }
 
+// by this end point data is overrided with
+//because we are just omitting data from slice and
+//making changes in the data and adding data again
+//into the slice if user changes only one field
+//data is totally overrided with new data
+// means with empty values we control this flow in frontend =>react
+func UpdateSingleUser(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Update Single User")
+	w.Header().Set("Content-Type", "application/json")
+	defer r.Body.Close()
+	params := mux.Vars(r)
+
+	for id, user := range users {
+		if user.UserId == params["id"] {
+			users = append(users[:id], users[id+1:]...)
+			var user User
+			_ = json.NewDecoder(r.Body).Decode(&user)
+			user.UserId = params["id"]
+			users = append(users, user)
+			json.NewEncoder(w).Encode(user)
+			return
+		}
+	}
+
+	json.NewEncoder(w).Encode("User is not there with the given id")
+
+}
+
 // func handleError(err error) {
 // 	if err == nil {
 // 		panic(err)
@@ -118,4 +147,13 @@ func getSingleUser(w http.ResponseWriter, r *http.Request) {
 func passwordHasher(password string) (string, error) {
 	hash, err := bcrypt.GenerateFromPassword([]byte(password), 15)
 	return string(hash), err
+}
+
+//helper to check user exist or not
+
+func UserExistsOrNot(userId string) bool {
+	var user User
+
+	return user.UserId == userId
+
 }
