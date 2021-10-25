@@ -43,6 +43,7 @@ func main() {
 	r.HandleFunc("/users", getAllUsers_Admin).Methods("GET")
 	r.HandleFunc("/user/{id}", getSingleUser).Methods("GET")
 	r.HandleFunc("/user/{id}", UpdateSingleUser).Methods("PUT")
+	r.HandleFunc("/user/{id}", deleteSingleUser).Methods("DELETE")
 	listen := http.ListenAndServe(":5000", r)
 	log.Fatal(listen)
 }
@@ -138,6 +139,21 @@ func UpdateSingleUser(w http.ResponseWriter, r *http.Request) {
 
 }
 
+func deleteSingleUser(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Delete single user")
+	w.Header().Set("Content-Type", "application/json")
+	params := mux.Vars(r)
+
+	for id, user := range users {
+		if user.UserId == params["id"] {
+			users = append(users[:id], users[id+1:]...)
+			json.NewEncoder(w).Encode(&user)
+			break
+		}
+	}
+	json.NewEncoder(w).Encode("massage:Course is deleted successfully")
+}
+
 // func handleError(err error) {
 // 	if err == nil {
 // 		panic(err)
@@ -153,7 +169,5 @@ func passwordHasher(password string) (string, error) {
 
 func UserExistsOrNot(userId string) bool {
 	var user User
-
 	return user.UserId == userId
-
 }
