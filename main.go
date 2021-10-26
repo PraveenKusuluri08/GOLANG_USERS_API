@@ -153,6 +153,12 @@ func deleteSingleUser(w http.ResponseWriter, r *http.Request) {
 	}
 	json.NewEncoder(w).Encode("massage:Course is deleted successfully")
 }
+func deleteAllUsers(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Delete all users")
+	w.Header().Set("Content-Type", "application/json")
+	users = users[:0]
+	json.NewEncoder(w).Encode("All users deleted successfully")
+}
 
 // func handleError(err error) {
 // 	if err == nil {
